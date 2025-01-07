@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mavistra F1</title>
+
+  <!-- favicon -->
+  <link rel="shortcut icon" href="./assets/images/logo.png" type="image/svg+xml">
+
+  <!-- custom css link -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- google font link -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body onload="startCountdown(); fetchAndDisplayResults(); fetchRaceList();"></body>
+
+<body id="top">
+
+  <!-- HEADER -->
+  <header class="header" data-header>
+    <div class="container">
+
+      <div class="overlay" data-overlay></div>
+
+      <a href="./index.html" class="logo">
+        <img src="./assets/images/logo.png" alt="Image" style="width:65px;height:60px;">
+      </a>
+
+      <div class="header-actions">
+
+        <button class="search-btn" onclick="toggleSearchBar()">
+          <ion-icon name="search-outline"></ion-icon>
+        </button>
+
+        <div class="search-bar" id="searchBar">
+          <input type="text" id="searchInput" placeholder="Rechercher..." oninput="searchMovies()">
+          <div class="suggestions" id="suggestions"></div>
+        </div>
+
+        <div class="lang-wrapper">
+          <label for="language">
+            <ion-icon name="globe-outline"></ion-icon>
+          </label>
+          <select name="language" id="language">
+            <option value="fr">FR</option>
+          </select>
+        </div>
+
+       
+      </div>
+
+      <button class="menu-open-btn" data-menu-open-btn>
+        <ion-icon name="reorder-two"></ion-icon>
+      </button>
+
+      <nav class="navbar" data-navbar>
+        <div class="navbar-top">
+          <a href="./index.html" class="logo">
+            <img src="./assets/images/logo.png" alt="Filmlane logo" style="width:65px;height:60px;">
+          </a>
+          <button class="menu-close-btn" data-menu-close-btn>
+            <ion-icon name="close-outline"></ion-icon>
+          </button>
+        </div>
+
+        <ul class="navbar-list">
+          <li><a href="./index.html" class="navbar-link">Home</a></li>
+          <li><a href="grand_prix.html" class="navbar-link">Grand Prix</a></li>
+          <li><a href="Serie.html" class="navbar-link">Serie</a></li>
+          <li><a href="Anime.html" class="navbar-link">Anime</a></li>
+          <li><a href="tv.html" class="navbar-link">Tv</a></li>
+        </ul>
+
+       
+      </nav>
+    </div>
+  </header>
+
+
+
+
+
+  <main>
+    <article>
+
+      <!-- 
+        - #UPCOMING
+      -->
+
+      <section class="upcoming">
+           <!-- Tableau pour le minuteur -->
+<div id="countdownTable">
+
+    <div id="startDateTime"></div>
+</div>
+
+    <select style="background-color: white;" id="raceSelector" onchange="fetchAndDisplayResults(this.value);"></select>
+
+
+   <!-- Résultats de la dernière course -->
+<div id="raceResults">
+    <h2 id="grandPrixLocation">Résultats de 2024</h2>
+    
+    <div class="column_f1">
+        <h3></h3>
+        <table id="topResultsTable">
+            <thead>
+                <tr>
+                    <th>Classement</th>
+                    <th>Pilote</th>
+                    <th>Écurie</th>
+                    <th>Statut</th> 
+                </tr>
+            </thead>
+            <tbody id="topResultsList"></tbody>
+        </table>
+    </div>
+    <div class="column_f1">
+        <h3></h3>
+        <table id="bottomResultsTable">
+            <thead>
+                <tr>
+                    <th>Classement</th>
+                    <th>Pilote</th>
+                    <th>Écurie</th>
+                    <th>Statut</th> 
+                </tr>
+            </thead>
+            <tbody id="bottomResultsList"></tbody>
+        </table>
+    </div>
+</div>
+
+
+    <!-- JavaScript pour le minuteur et les résultats -->
+    <script>
+        let countdownInterval;
+        const timerElement = document.getElementById("timer");
+        const grandPrixLocationElement = document.getElementById("grandPrixLocation");
+        const startDateTimeElement = document.getElementById("startDateTime");
+
+        const grandPrixDates = [
+            new Date("2024-11-24T07:00:00"),
+            new Date("2024-12-01T17:00:00"),
+            new Date("2024-12-08T14:00:00")
+        ];
+
+        const grandPrixLocations = [
+            "Las Vegas",
+            "Qatar",
+            "Abu Dhabi",
+        ];
+
+        let currentGrandPrix = 0;
+
+       function startCountdown() {
+    const targetDate = grandPrixDates[currentGrandPrix];
+    const targetLocation = grandPrixLocations[currentGrandPrix];
+
+    const now = new Date();
+    const currentTime = now.getTime();
+    const targetTimeMillis = targetDate.getTime();
+
+    if (currentTime >= targetTimeMillis) {
+        currentGrandPrix++;
+        if (currentGrandPrix >= grandPrixDates.length) {
+            alert("Tous les Grands Prix sont terminés.");
+            return;
+        }
+        startCountdown(); // Appel récursif pour passer au prochain Grand Prix
+    }
+
+    const remainingTimeMillis = targetTimeMillis - currentTime;
+    countdownInterval = setInterval(() => {
+        const currentTime = new Date().getTime();
+        const remainingTimeMillis = targetTimeMillis - currentTime;
+
+        if (remainingTimeMillis <= 0) {
+            clearInterval(countdownInterval);
+            startCountdown(); // Passer au prochain Grand Prix une fois terminé
+        } else {
+            const days = Math.floor(remainingTimeMillis / 86400000);
+            const hours = Math.floor((remainingTimeMillis % 86400000) / 3600000);
+            const minutes = Math.floor((remainingTimeMillis % 3600000) / 60000);
+            const seconds = Math.floor((remainingTimeMillis % 60000) / 1000);
+
+            // Mettre à jour le tableau
+            const daysElement = document.getElementById("days");
+            const hoursElement = document.getElementById("hours");
+            const minutesElement = document.getElementById("mins");
+
+            daysElement.textContent = days;
+            hoursElement.textContent = hours;
+            minutesElement.textContent = minutes;
+
+            const targetYear = targetDate.getFullYear();
+            const targetMonth = targetDate.getMonth();
+            const targetDay = targetDate.getDate();
+            const targetHour = targetDate.getHours();
+            const targetMinute = targetDate.getMinutes();
+            startDateTimeElement.textContent = `Heure de début : ${targetDay}/${targetMonth + 1}/${targetYear} - ${targetHour}:${targetMinute}`;
+            grandPrixLocationElement.textContent = `Grand Prix à : ${targetLocation}`;
+        }
+    }, 1000);
+}
+
+
+        function fetchRaceList() {
+            fetch('https://ergast.com/api/f1/current.json')
+                .then(response => response.json())
+                .then(data => {
+                    const raceSelector = document.getElementById('raceSelector');
+                    raceSelector.innerHTML = "";
+    
+                    data.MRData.RaceTable.Races.forEach(race => {
+                        const option = document.createElement('option');
+                        option.value = race.round;
+                        option.text = race.raceName;
+                        raceSelector.add(option);
+                    });
+                })
+                .catch(error => console.error('Erreur lors de la récupération de la liste des courses :', error));
+        }
+        
+        function fetchRaceList() {
+            fetch('https://ergast.com/api/f1/current.json')
+                .then(response => response.json())
+                .then(data => {
+                    const raceSelector = document.getElementById('raceSelector');
+                    raceSelector.innerHTML = "";
+    
+                    let lastRaceIndex = -1;
+                    // Ajouter les options dans le menu déroulant
+                    data.MRData.RaceTable.Races.forEach((race, index) => {
+                        const option = document.createElement('option');
+                        option.value = race.round;
+                        option.text = race.raceName;
+                        raceSelector.add(option);
+
+                        // Vérifier si le Grand Prix a eu lieu (a une date passée)
+                        const raceDate = new Date(race.date + "T" + race.time);
+                        if (raceDate.getTime() < Date.now()) {
+                            lastRaceIndex = index;
+                        }
+                    });
+
+                    // Sélectionner automatiquement le dernier Grand Prix avec des résultats
+                    if (lastRaceIndex !== -1) {
+                        raceSelector.selectedIndex = lastRaceIndex;
+                        // Afficher les résultats du dernier Grand Prix avec des résultats
+                        fetchAndDisplayResults(raceSelector.value);
+                    } else {
+                        // Aucun Grand Prix avec des résultats
+                        alert("Aucun Grand Prix avec des résultats n'a été trouvé.");
+                    }
+                })
+                .catch(error => console.error('Erreur lors de la récupération de la liste des courses :', error));
+        }
+
+        function fetchAndDisplayResults(round) {
+    const apiUrl = `https://ergast.com/api/f1/2024/${round}/results.json`;
+
+    fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            const topResultsTable = document.getElementById('topResultsTable');
+            const bottomResultsTable = document.getElementById('bottomResultsTable');
+            const topResultsList = document.getElementById('topResultsList');
+            const bottomResultsList = document.getElementById('bottomResultsList');
+            topResultsList.innerHTML = "";
+            bottomResultsList.innerHTML = "";
+
+            const race = data.MRData.RaceTable.Races[0];
+
+            if (race && race.Results && race.Results.length > 0) {
+                race.Results.forEach((result, index) => {
+                    const row = index < 10 ? topResultsList.insertRow() : bottomResultsList.insertRow();
+                    const cellRank = row.insertCell(0);
+                    const cellDriver = row.insertCell(1);
+                    const cellConstructor = row.insertCell(2);
+                    const cellStatus = row.insertCell(3);
+
+                    cellRank.textContent = index + 1;
+                    cellDriver.textContent = `${result.Driver.givenName} ${result.Driver.familyName}`;
+                    cellConstructor.textContent = result.Constructor.name;
+                    cellStatus.textContent = result.status;
+                });
+            } else {
+                // Aucun classement disponible
+                const messageRow = topResultsList.insertRow();
+                const messageCell = messageRow.insertCell(0);
+                messageCell.colSpan = 4;
+                messageCell.textContent = "Ce Grand Prix n'a pas encore commencé";
+            }
+
+            // Append the tables to the resultsTable div
+            topResultsTable.appendChild(topResultsList);
+            bottomResultsTable.appendChild(bottomResultsList);
+        })
+        .catch(error => console.error('Erreur lors de la récupération des résultats :', error));
+}
+
+
+
+    </script>
+
+
+
+
+
+      </section>
+
+
+
+
+
+
+        
+
+        </article>
+    </main>
+
+
+
+
+
+    <!-- 
+        - #FOOTER
+    -->
+
+    <footer class="footer">
+
+        <div class="footer-top">
+        <div class="container">
+
+            <div class="footer-brand-wrapper">
+
+            </div>
+
+            
+
+            <ul class="quicklink-list">
+
+                <li>
+                <a href="#" class="quicklink-link">Faq</a>
+                </li>
+
+                <li>
+                <a href="#" class="quicklink-link">Help center</a>
+                </li>
+
+                <li>
+                <a href="#" class="quicklink-link">Terms of use</a>
+                </li>
+
+                <li>
+                <a href="#" class="quicklink-link">Privacy</a>
+                </li>
+
+            </ul>
+
+            <ul class="social-list">
+
+                <li>
+                <a href="#" class="social-link">
+                    <ion-icon name="logo-facebook"></ion-icon>
+                </a>
+                </li>
+
+                <li>
+                <a href="#" class="social-link">
+                    <ion-icon name="logo-twitter"></ion-icon>
+                </a>
+            </li>
+
+            <li>
+              <a href="#" class="social-link">
+                <ion-icon name="logo-pinterest"></ion-icon>
+              </a>
+            </li>
+
+            <li>
+              <a href="#" class="social-link">
+                <ion-icon name="logo-linkedin"></ion-icon>
+              </a>
+            </li>
+
+          </ul>
+
+        </div>
+
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="container">
+
+        <p class="copyright">
+          &copy; 2024 <a href="#">LesGeek's</a>. All Rights Reserved
+        </p>
+
+       
+
+      </div>
+    </div>
+
+  </footer>
+
+
+
+
+
+  <!-- 
+    - #GO TO TOP
+  -->
+
+  <a href="#top" class="go-top" data-go-top>
+    <ion-icon name="chevron-up"></ion-icon>
+  </a>
+
+
+
+
+
+  <!-- 
+    - custom js link
+  -->
+  <script src="./assets/js/script.js"></script>
+
+  <!-- 
+    - ionicon link
+  -->
+  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+  const searchBtn = document.querySelector(".search-btn");
+  const searchBar = document.getElementById("searchBar");
+
+  searchBtn.addEventListener("click", function() {
+    searchBar.classList.toggle("visible");
+    if (searchBar.classList.contains("visible")) {
+      searchBar.style.display = "block";
+    } else {
+      searchBar.style.display = "none";
+    }
+  });
+});
+
+function searchMovies() {
+  const query = document.getElementById("searchInput").value.toLowerCase();
+  const suggestions = document.getElementById("suggestions");
+  suggestions.innerHTML = "";
+
+  if (query.length === 0) {
+    return;
+  }
+
+  const movies = [
+    "Star Wars  The Acolyte",
+    "Halo",
+    "Doctor Strange in the Multiverse of Madness",
+    "Cars",
+    "Oppenheimer",
+    "The Northman",
+    "Le prestige",
+    "One Piece",
+    "Fallout",
+    "dark",
+    "My hero academia",
+    "Grand Prix - F1",
+    "Godzilla x Kong  Le Nouvel Empire",
+    "canal+ sport",
+    "canal+ formule 1",
+    "canal+",
+    "pirates des caraïbes la malédiction du black pearl",
+    "pirates des caraïbes le secret du coffre maudit",
+    "pirates des caraïbes jusqu'au bout du monde",
+    "pirates des caraïbes la fontaine de jouvence",
+    "pirates des caraïbes la vengeance de salazar",
+    "inazuma eleven",
+    "the boys",
+    "Knuckles"
+  ];
+
+  const filteredMovies = movies.filter(movie => movie.toLowerCase().includes(query));
+
+  filteredMovies.forEach(movie => {
+    const suggestionDiv = document.createElement("div");
+    suggestionDiv.textContent = movie;
+    suggestionDiv.addEventListener("click", function() {
+      window.location.href = movie.replace(/ /g, "%20") + ".html";
+    });
+    suggestions.appendChild(suggestionDiv);
+  });
+}
+
+  </script>
+
+</body>
+
+</html>
