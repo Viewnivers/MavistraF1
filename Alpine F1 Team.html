@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alpine - F1 Constructor</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    async function fetchConstructorData() {
+      try {
+        // Fetch constructor data from Ergast API
+        const ergastResponse = await fetch("http://ergast.com/api/f1/2024/constructors.json");
+        const ergastData = await ergastResponse.json();
+        const alpineConstructor = ergastData.MRData.ConstructorTable.Constructors.find(constructor => constructor.constructorId === "alpine");
+
+        if (alpineConstructor) {
+          const wikiTitle = alpineConstructor.url.split("/").pop(); // Extract Wikipedia title
+
+          // Fetch data from Wikipedia API
+          const wikiResponse = await fetch(`https://fr.wikipedia.org/api/rest_v1/page/summary/${wikiTitle}`);
+          const wikiData = await wikiResponse.json();
+
+          // Populate page with data
+          document.getElementById("constructor-title").textContent = alpineConstructor.name;
+          document.getElementById("constructor-logo").src = wikiData.thumbnail?.source || "../assets/images/default-logo.png";
+          document.getElementById("constructor-description").textContent = wikiData.extract || "Description not available.";
+          document.getElementById("wiki-link").href = wikiData.content_urls.desktop.page;
+
+          const teamInfoList = document.getElementById("team-info");
+          teamInfoList.innerHTML = `
+            <li><strong>Full Name:</strong> ${alpineConstructor.name}</li>
+            <li><strong>Nationality:</strong> ${alpineConstructor.nationality}</li>
+          `;
+        }
+      } catch (error) {
+        console.error("Error fetching constructor data:", error);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", fetchConstructorData);
+  </script>
+</head>
+
+<body>
+  <!-- HEADER -->
+  <header class="header" data-header>
+    <div class="container">
+
+      <div class="overlay" data-overlay></div>
+
+      <a href="./index.html" class="logo">
+        <img src="Logo.jpg" alt="Image" style="width:150px;height:60px;">
+      </a>
+
+      <div class="header-actions">
+
+        <button class="search-btn" onclick="toggleSearchBar()">
+          <ion-icon name="search-outline"></ion-icon>
+        </button>
+
+        <div class="search-bar" id="searchBar">
+          <input type="text" id="searchInput" placeholder="Rechercher..." oninput="searchMovies()">
+          <div class="suggestions" id="suggestions"></div>
+        </div>
+
+        <div class="lang-wrapper">
+          <label for="language">
+            <ion-icon name="globe-outline"></ion-icon>
+          </label>
+          <select name="language" id="language">
+            <option value="fr">FR</option>
+          </select>
+        </div>
+
+       
+      </div>
+
+      <button class="menu-open-btn" data-menu-open-btn>
+        <ion-icon name="reorder-two"></ion-icon>
+      </button>
+
+      <nav class="navbar" data-navbar>
+        <div class="navbar-top">
+          <a href="./index.html" class="logo">
+            <img src="./assets/images/logo.png" alt="Filmlane logo" style="width:65px;height:60px;">
+          </a>
+          <button class="menu-close-btn" data-menu-close-btn>
+            <ion-icon name="close-outline"></ion-icon>
+          </button>
+        </div>
+
+        <ul class="navbar-list">
+          <li><a href="./index.html" class="navbar-link">Accueil</a></li>
+          <li><a href="grand_prix.html" class="navbar-link">Grand Prix</a></li>
+          <li><a href="ecurie.html" class="navbar-link">Écuries</a></li>
+          <li><a href="pilote.html" class="navbar-link">Pilotes</a></li>
+          <li><a href="tv.html" class="navbar-link">Tv</a></li>
+        </ul>
+
+       
+      </nav>
+    </div>
+  </header>
+
+
+
+  <main>
+    <section class="constructor-details">
+      <div class="container">
+        <h1 id="constructor-title" class="section-title">Loading...</h1>
+
+        <div class="constructor-info">
+          <img id="constructor-logo" src="../assets/images/default-logo.png" alt="Constructor Logo" class="constructor-logo">
+          <p id="constructor-description">Loading description...</p>
+        </div>
+
+        <h2>Team Information</h2>
+        <ul id="team-info">
+          <li>Loading team information...</li>
+        </ul>
+
+        <a id="wiki-link" href="#" target="_blank" class="external-link">Learn More on Wikipedia</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2024 <a href="../index.html">LesGeek's</a>. All Rights Reserved.</p>
+    </div>
+  </footer>
+</body>
+
+</html>

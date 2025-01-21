@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mavistra F1</title>
+
+  <!-- favicon -->
+  <link rel="shortcut icon" href="./assets/images/logo.png" type="image/svg+xml">
+
+  <!-- custom css link -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- google font link -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body id="top">
+
+  <!-- HEADER -->
+  <header class="header" data-header>
+    <div class="container">
+
+      <div class="overlay" data-overlay></div>
+
+      <a href="./index.html" class="logo">
+        <img src="Logo.jpg" alt="Image" style="width:150px;height:60px;">
+      </a>
+
+      <div class="header-actions">
+
+        <button class="search-btn" onclick="toggleSearchBar()">
+          <ion-icon name="search-outline"></ion-icon>
+        </button>
+
+        <div class="search-bar" id="searchBar">
+          <input type="text" id="searchInput" placeholder="Rechercher..." oninput="searchMovies()">
+          <div class="suggestions" id="suggestions"></div>
+        </div>
+
+        <div class="lang-wrapper">
+          <label for="language">
+            <ion-icon name="globe-outline"></ion-icon>
+          </label>
+          <select name="language" id="language">
+            <option value="fr">FR</option>
+          </select>
+        </div>
+
+       
+      </div>
+
+      <button class="menu-open-btn" data-menu-open-btn>
+        <ion-icon name="reorder-two"></ion-icon>
+      </button>
+
+      <nav class="navbar" data-navbar>
+        <div class="navbar-top">
+          <a href="./index.html" class="logo">
+            <img src="./assets/images/logo.png" alt="Filmlane logo" style="width:65px;height:60px;">
+          </a>
+          <button class="menu-close-btn" data-menu-close-btn>
+            <ion-icon name="close-outline"></ion-icon>
+          </button>
+        </div>
+
+        <ul class="navbar-list">
+          <li><a href="./index.html" class="navbar-link">Accueil</a></li>
+          <li><a href="grand_prix.html" class="navbar-link">Grand Prix</a></li>
+          <li><a href="ecurie.html" class="navbar-link">Écuries</a></li>
+          <li><a href="pilote.html" class="navbar-link">Pilotes</a></li>
+          <li><a href="tv.html" class="navbar-link">Tv</a></li>
+        </ul>
+
+       
+      </nav>
+    </div>
+  </header>
+
+
+
+  <main>
+    <article>
+      <!-- Section to display F1 constructors -->
+      <section class="upcoming">
+        <div class="container">
+          <div class="title-wrapper">
+            <h2 class="h2 section-title">Écuries de F1 (2024)</h2>
+          </div>
+
+          <ul class="movies-list has-scrollbar" id="constructors-list">
+            <!-- Content dynamically added here -->
+          </ul>
+        </div>
+      </section>
+    </article>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-bottom">
+      <div class="container">
+        <p class="copyright">
+          &copy; 2024 <a href="#">LesGeek's</a>. All Rights Reserved
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Custom JS -->
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const apiUrl = "http://ergast.com/api/f1/2024/constructors.json";
+      const listContainer = document.getElementById("constructors-list");
+
+      try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        const constructors = data.MRData.ConstructorTable.Constructors;
+
+        // Clear the list
+        listContainer.innerHTML = "";
+
+        constructors.forEach(constructor => {
+          // Create the list item
+          const listItem = document.createElement("li");
+          listItem.classList.add("movie-card");
+
+          // Add constructor content
+          listItem.innerHTML = `
+            <figure class="card-banner">
+              <img  src="./Images/${constructor.name}.png" style="width:300px;height:500px; alt="${constructor.name}" onerror="this.src='./assets/images/default-logo.png'">
+            </figure>
+            <div class="title-wrapper">
+              <h3 class="card-title">${constructor.name}</h3>
+              <a href="${constructor.name}.html" target="_blank" class="visit-link">Visiter</a>
+            </div>
+          `;
+
+          listContainer.appendChild(listItem);
+        });
+      } catch (error) {
+        console.error("Erreur lors de la récupération des écuries :", error);
+        listContainer.innerHTML = "<p>Impossible de charger les écuries pour le moment.</p>";
+      }
+    });
+  </script>
+
+</body>
+
+</html>
