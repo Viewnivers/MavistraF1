@@ -116,7 +116,7 @@
     scroll-behavior: smooth;
   }
   
-  body { background: rgb(210, 208, 208); }
+
   
   body.active { overflow: hidden; }
   

@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Alpine - F1 Constructor</title>
+  <title>Ferrari - F1 Constructor</title>
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script>
@@ -13,25 +13,25 @@
         // Fetch constructor data from Ergast API
         const ergastResponse = await fetch("http://ergast.com/api/f1/2024/constructors.json");
         const ergastData = await ergastResponse.json();
-        const alpineConstructor = ergastData.MRData.ConstructorTable.Constructors.find(constructor => constructor.constructorId === "alpine");
+        const FerrariConstructor = ergastData.MRData.ConstructorTable.Constructors.find(constructor => constructor.constructorId === "Ferrari");
 
-        if (alpineConstructor) {
-          const wikiTitle = alpineConstructor.url.split("/").pop(); // Extract Wikipedia title
+        if (FerrariConstructor) {
+          const wikiTitle = FerrariConstructor.url.split("/").pop(); // Extract Wikipedia title
 
           // Fetch data from Wikipedia API
           const wikiResponse = await fetch(`https://fr.wikipedia.org/api/rest_v1/page/summary/${wikiTitle}`);
           const wikiData = await wikiResponse.json();
 
           // Populate page with data
-          document.getElementById("constructor-title").textContent = alpineConstructor.name;
+          document.getElementById("constructor-title").textContent = FerrariConstructor.name;
           document.getElementById("constructor-logo").src = wikiData.thumbnail?.source || "../assets/images/default-logo.png";
           document.getElementById("constructor-description").textContent = wikiData.extract || "Description not available.";
           document.getElementById("wiki-link").href = wikiData.content_urls.desktop.page;
 
           const teamInfoList = document.getElementById("team-info");
           teamInfoList.innerHTML = `
-            <li><strong>Full Name:</strong> ${alpineConstructor.name}</li>
-            <li><strong>Nationality:</strong> ${alpineConstructor.nationality}</li>
+            <li><strong>Full Name:</strong> ${FerrariConstructor.name}</li>
+            <li><strong>Nationality:</strong> ${FerrariConstructor.nationality}</li>
           `;
         }
       } catch (error) {
